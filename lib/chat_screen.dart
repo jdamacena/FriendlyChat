@@ -75,7 +75,8 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               var _messagesData = snapshot.data;
               _messagesData.forEach((messageData) {
                 var message = new ChatMessage(
-                  message: messageData,/*
+                  message:
+                      messageData, /*
                   animationController: new AnimationController(
                       duration: new Duration(milliseconds: 700), vsync: this),*/
                 );
@@ -130,16 +131,21 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         child: new Row(
           children: <Widget>[
             new Flexible(
-              child: new TextField(
-                controller: _textController,
-                onSubmitted: _isComposing ? _handleSubmitted : null,
-                onChanged: (String text) {
-                  setState(() {
-                    _isComposing = text.trim().length > 0;
-                  });
-                },
-                decoration:
-                    new InputDecoration.collapsed(hintText: "Send message"),
+              child: new ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 100),
+                child: new TextField(
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  controller: _textController,
+                  onSubmitted: _isComposing ? _handleSubmitted : null,
+                  onChanged: (String text) {
+                    setState(() {
+                      _isComposing = text.trim().length > 0;
+                    });
+                  },
+                  decoration:
+                      new InputDecoration.collapsed(hintText: "Send message"),
+                ),
               ),
             ),
             new Container(
@@ -173,7 +179,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     ChatMessage chatMessage = new ChatMessage(
       message: new Message(text: value),
       animationController: new AnimationController(
-          duration: new Duration(milliseconds: 700), vsync: this),
+          duration: new Duration(milliseconds: 300), vsync: this),
     );
 
     setState(() {
