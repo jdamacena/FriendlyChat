@@ -1,32 +1,28 @@
-class Message {
-  final String guid;
-  final String name;
-  final String text;
-  final String timestamp;
-  final bool incoming;
+import 'package:uuid/uuid.dart';
 
-  Message({this.guid = '', this.name = '', this.text = '', this.timestamp = '', this.incoming = false});
+class Message {
+  final String senderId;
+  final String threadId;
+  final String message;
+
+  String messageId = Uuid().v4();
+  int timestamp = new DateTime.now().millisecondsSinceEpoch;
+
+  Message({
+    this.senderId = '',
+    this.threadId = '',
+    this.message = '',
+  });
 
   factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
-      guid: json['guid'],
-      name: json['name'],
-      text: json['name'],
-      timestamp: json['timestamp'],
-      incoming: json['incoming'],
-    );
-  }
+    Message tmpMessage = Message(
+        senderId: json['sender_id'],
+        threadId: json['thread_id'],
+        message: json['message']);
 
-  List<Message> listFromJson(Map<String, dynamic> json) {
-    var json2 = json['root'];
-    List<Message> messagesList = new List<Message>();
+    tmpMessage.messageId = json['message_id'];
+    tmpMessage.timestamp = json['timestamp'];
 
-    for (int i = 0; i < json2.length; i++) {
-      var messageMap = json2[i];
-      var message = Message.fromJson(messageMap);
-      messagesList.add(message);
-    }
-
-    return messagesList;
+    return tmpMessage;
   }
 }

@@ -20,6 +20,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _isComposing = false;
   Future<List<Message>> post;
 
+  var userId = "f3a183a4-178b-4735-9002-7daee2d0b38f";
+  var threadId = "73039990-71d9-4aa1-989d-8a0d673dae0b";
+
   @override
   void initState() {
     super.initState();
@@ -27,8 +30,8 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Future<List<Message>> fetchPost() async {
-    final response = await http
-        .get('https://next.json-generator.com/api/json/get/NJovWsL8I');
+    final response = await http.get(
+        'https://my-json-server.typicode.com/jdamacena/friendlychat_api/messages');
 
     if (response.statusCode == 200) {
       // If server returns an OK response, parse the JSON
@@ -75,10 +78,8 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               var _messagesData = snapshot.data;
               _messagesData.forEach((messageData) {
                 var message = new ChatMessage(
-                  message:
-                      messageData, /*
-                  animationController: new AnimationController(
-                      duration: new Duration(milliseconds: 700), vsync: this),*/
+                  message: messageData,
+                  userId: this.userId,
                 );
 
                 _messages.add(message);
@@ -91,7 +92,10 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       child: new ListView.builder(
                         reverse: true,
                         padding: EdgeInsets.all(8.0),
-                        itemBuilder: (_, int index) => _messages[index],
+                        itemBuilder: (_, int index) {
+                          _messages.sort((ChatMessage m1, ChatMessage m2) {return m2.message.timestamp.compareTo(m1.message.timestamp);});
+                          return _messages[index];
+                        },
                         itemCount: _messages.length,
                       ),
                     ),
@@ -177,7 +181,8 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
 
     ChatMessage chatMessage = new ChatMessage(
-      message: new Message(text: value),
+      message: new Message(message: value, senderId: this.userId, threadId: this.threadId),
+      userId: this.userId,
       animationController: new AnimationController(
           duration: new Duration(milliseconds: 300), vsync: this),
     );
