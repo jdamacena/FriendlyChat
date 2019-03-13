@@ -15,7 +15,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
-  final List<ChatMessage> _messages = <ChatMessage>[];
+  List<Message> _messages = <Message>[];
   final TextEditingController _textController = new TextEditingController();
   bool _isComposing = false;
   Future<List<Message>> post;
@@ -75,15 +75,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           future: post,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              var _messagesData = snapshot.data;
-              _messagesData.forEach((messageData) {
-                var message = new ChatMessage(
-                  message: messageData,
-                  userId: this.userId,
-                );
-
-                _messages.add(message);
-              });
+              _messages = snapshot.data;
 
               return new Container(
                 child: new Column(
@@ -92,10 +84,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       child: new ListView.builder(
                         reverse: true,
                         padding: EdgeInsets.all(8.0),
-                        itemBuilder: (_, int index) {
-                          _messages.sort((ChatMessage m1, ChatMessage m2) {return m2.message.timestamp.compareTo(m1.message.timestamp);});
-                          return _messages[index];
-                        },
+                        itemBuilder: messageBuilder,
                         itemCount: _messages.length,
                       ),
                     ),
@@ -125,6 +114,17 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             return new Center(child: new CircularProgressIndicator());
           },
         ));
+  }
+
+  Widget messageBuilder(_, int index) {
+    _messages.sort((m1, m2) => m2.timestamp.compareTo(m1.timestamp));
+
+    var message = new ChatMessage(
+      message: _messages[index],
+      userId: this.userId,
+    );
+
+    return message;
   }
 
   _buildTextComposer() {
@@ -176,28 +176,13 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   void _handleSubmitted(String value) {
     _textController.clear();
+
+    var message = new Message(
+        message: value, senderId: this.userId, threadId: this.threadId);
+
     setState(() {
       _isComposing = false;
+      _messages.insert(0, message);
     });
-
-    ChatMessage chatMessage = new ChatMessage(
-      message: new Message(message: value, senderId: this.userId, threadId: this.threadId),
-      userId: this.userId,
-      animationController: new AnimationController(
-          duration: new Duration(milliseconds: 300), vsync: this),
-    );
-
-    setState(() {
-      _messages.insert(0, chatMessage);
-    });
-
-    chatMessage.animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    for (ChatMessage message in _messages)
-      message.animationController.dispose();
-    super.dispose();
   }
 }
