@@ -1,4 +1,4 @@
-# friendlychat
+# Friendly Chat
 
 A beautiful and friendly chat
 

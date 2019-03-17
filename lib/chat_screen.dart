@@ -58,14 +58,11 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             children: <Widget>[
               new CircleAvatar(
                 backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.favorite,
-                  color: Colors.indigo,
-                ),
+                child: new Text("N"),
               ),
               new Container(
                   margin: EdgeInsets.only(left: 8.0),
-                  child: new Text("Junior Damacena")),
+                  child: new Text("Name Surname")),
             ],
           ),
           elevation:
